@@ -81,7 +81,7 @@ export default function Footer() {
 
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-center">
           <p className="text-xs text-muted-foreground">
-            &copy; 2024 MoneyLabs Inc. All rights reserved.
+            &copy; 2026 MoneyLabs Inc. All rights reserved.
           </p>
           <div className="flex gap-4">
              <Link href="/terms" className="text-xs text-muted-foreground hover:text-primary">Privacy Policy</Link>
