@@ -18,6 +18,10 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'plus.unsplash.com',
       },
+      {
+        protocol: "https",
+        hostname: "utfs.io", // Domain wajib UploadThing
+      },
     ],
   },
 };

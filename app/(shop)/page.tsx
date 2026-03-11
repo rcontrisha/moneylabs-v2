@@ -17,39 +17,39 @@ export default async function HomePage() {
   const brands = await prisma.brand.findMany({});
   const visualCategories = await prisma.featuredCategory.findMany({ include: { category: true }, orderBy: { order: "asc" } });
 
-  // Tarik produk (pastikan jumlahnya cukup banyak biar bisa di-scroll, misal 20)
   const featuredProducts = await prisma.product.findMany({
     where: { featured: true, stockStatus: 'instock' },
-    take: 20, 
+    take: 15, 
     include: { brand: true, category: true },
     orderBy: { createdAt: "desc" },
   });
 
   return (
-    <div className="flex flex-col pb-16">
+    <div className="flex flex-col pb-16 bg-white">
       <HeroSlider data={slides} />
       <BrandWall brands={brands} />
       <VisualCategories categories={visualCategories} />
 
-      {/* SECTION 4: FEATURED DROPS (Refactored) */}
-      {/* Container max-w-1600px tetep dipake di luar biar konsisten */}
-      <section className="mx-auto w-full max-w-[1600px] px-4 sm:px-6 lg:px-10 overflow-hidden">
+      {/* SECTION 4: FEATURED DROPS */}
+      <section className="mx-auto w-full max-w-[1600px] px-4 sm:px-6 lg:px-10 py-16">
         {featuredProducts.length > 0 ? (
-          // Kita panggil komponen baru dengan props title dan link
+          /* Kita panggil Carousel yang udah kita set 5 produk per slide sebelumnya */
           <FeaturedCarousel 
             title="Featured Drops" 
             exploreLink="/shop"
             products={featuredProducts} 
           />
         ) : (
-          <div className="py-20 text-center font-bold text-muted-foreground uppercase tracking-widest">
+          <div className="py-20 text-center font-bold text-muted-foreground uppercase tracking-widest text-xs opacity-50">
             No Drops Available
           </div>
         )}
       </section>
 
       <PromoBanner />
-      <BenefitsSection />
+      <div className="mt-10">
+        <BenefitsSection />
+      </div>
     </div>
   );
 }

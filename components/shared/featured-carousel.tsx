@@ -37,8 +37,6 @@ export default function FeaturedCarousel({ title, exploreLink, products }: Featu
 
   return (
     <div className="w-full py-10"> {/* Container utama dikasih padding */}
-      
-      {/* --- FOOT LOCKER STYLE HEADER --- */}
       <div className="mb-8 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
         
         {/* Bagian Kiri: Judul & Garis */}
@@ -86,8 +84,6 @@ export default function FeaturedCarousel({ title, exploreLink, products }: Featu
           </Button>
         </div>
       </div>
-      {/* --- END HEADER --- */}
-
 
       {/* --- CAROUSEL CONTENT --- */}
       <Carousel
@@ -100,8 +96,6 @@ export default function FeaturedCarousel({ title, exploreLink, products }: Featu
           {products.map((product) => (
             <CarouselItem 
               key={product.id} 
-              // REFACTOR: Ubah jadi basis-1/5 di desktop (5 item)
-              // Mobile: 2, Tablet: 3, Laptop Kecil: 4, Desktop Gede: 5
               className="basis-1/2 pl-4 md:basis-1/3 lg:basis-1/4 xl:basis-1/5"
             >
               <ProductCard data={product} />

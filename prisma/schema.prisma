@@ -22,16 +22,15 @@ model User {
   id              String    @id @default(cuid())
   name            String
   email           String    @unique
-  mobile          String?   // Dari SQL lama: mobile
+  mobile          String?   
   password        String
   role            Role      @default(USER)
   emailVerifiedAt DateTime? @map("email_verified_at")
-  profileImage    String?   // Dari SQL lama: image
+  profileImage    String?   
   
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
-  // Relasi
   addresses     Address[]
   orders        Order[]
   transactions  Transaction[]
@@ -43,8 +42,6 @@ model User {
 model Address {
   id          String   @id @default(cuid())
   userId      String   @map("user_id")
-  
-  // Field Alamat Lengkap (Sesuai SQL lama)
   name        String
   phone       String
   locality    String
@@ -54,8 +51,7 @@ model Address {
   country     String
   landmark    String?
   zip         String?
-  
-  type        String   @default("home") // home/office
+  type        String   @default("home") 
   isDefault   Boolean  @default(false)
 
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -64,7 +60,7 @@ model Address {
 }
 
 // ==========================================
-// 2. PRODUCT CATALOG (E-Commerce Core)
+// 2. PRODUCT CATALOG
 // ==========================================
 
 model Brand {
@@ -82,44 +78,38 @@ model Category {
   name      String
   slug      String    @unique
   image     String?
-  parentId  String?   @map("parent_id") // Support sub-category
+  parentId  String?   @map("parent_id") 
   
   products          Product[]
-  featuredInConfig  FeaturedCategory[] // Relasi ke CMS
+  featuredInConfig  FeaturedCategory[] 
 
   @@map("categories")
 }
 
 model Product {
   id             String   @id @default(cuid())
-  
-  // Field Penting
   name           String
   slug           String   @unique
   shortDesc      String?  @map("short_description") @db.Text
   description    String?  @db.LongText
   
-  // Harga (Decimal biar presisi duit)
-  regularPrice   Decimal  @map("regular_price") @db.Decimal(12, 2)
-  salePrice      Decimal? @map("sale_price") @db.Decimal(12, 2)
+  // 🚀 REFACTOR: Harga sekarang dinamis di dalam JSON 'sizes'
+  // Format JSON: { "new": [{size, regularPrice, salePrice, stock}], "used": [{size, regularPrice, salePrice, stock, condition, defects, images}] }
+  sizes          Json?    @map("sizes")
   
-  // Inventory
   SKU            String?
   stockStatus    String   @default("instock") @map("stock_status")
-  quantity       Int      @default(10)
+  quantity       Int      @default(0) // Total stok gabungan
   
-  // Media & Metadata
   featured       Boolean  @default(false)
-  image          String?  // Gambar utama (thumbnail)
-  images         String?  @db.Text // Gambar gallery (bisa JSON string atau dipisah koma)
+  image          String?
+  images         String?  @db.Text 
   
-  // Relasi FK
   brandId        String?  @map("brand_id")
   categoryId     String?  @map("category_id")
-  brand          Brand?    @relation(fields: [brandId], references: [id])
+  brand          Brand?   @relation(fields: [brandId], references: [id])
   category       Category? @relation(fields: [categoryId], references: [id])
   
-  // Relasi Lain
   orderItems     OrderItem[]
   wishlist       Wishlist[]
 
@@ -142,14 +132,11 @@ enum OrderStatus {
 model Order {
   id            String      @id @default(cuid())
   userId        String      @map("user_id")
-  
-  // Rekap Duit
   subtotal      Decimal     @db.Decimal(12, 2)
   discount      Decimal     @default(0) @db.Decimal(12, 2)
   tax           Decimal     @default(0) @db.Decimal(12, 2)
   total         Decimal     @db.Decimal(12, 2)
   
-  // Snapshot Alamat Pengiriman (Penting!)
   name          String      
   phone         String
   locality      String
@@ -160,7 +147,6 @@ model Order {
   landmark      String?
   zip           String?
 
-  // Status & Tanggal
   status        OrderStatus @default(ordered)
   isShippingDifferent Boolean @default(false) @map("is_shipping_different")
   deliveredDate DateTime?   @map("delivered_date")
@@ -181,9 +167,13 @@ model OrderItem {
   orderId   String  @map("order_id")
   productId String  @map("product_id")
   
-  price     Decimal @db.Decimal(12, 2) // Harga saat dibeli
+  price     Decimal @db.Decimal(12, 2) 
   quantity  Int
   
+  // 🚀 REFACTOR: Snapshot variant yang dibeli
+  selectedSize String? @map("selected_size")
+  condition    String? // "new" atau "used"
+
   order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   product   Product @relation(fields: [productId], references: [id])
 
@@ -194,10 +184,8 @@ model Transaction {
   id            String   @id @default(cuid())
   userId        String   @map("user_id")
   orderId       String   @unique @map("order_id")
-  
-  mode          String   // cod, card, paypal, midtrans
-  status        String   // pending, approved, declined
-  
+  mode          String   
+  status        String   
   createdAt     DateTime @default(now())
 
   user          User     @relation(fields: [userId], references: [id])
@@ -214,49 +202,46 @@ model Wishlist {
   user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, productId]) // Mencegah duplikat
+  @@unique([userId, productId])
   @@map("wishlists")
 }
 
 // ==========================================
-// 4. CMS (LANDING PAGE & CONFIG) 🚀
+// 4. CMS (LANDING PAGE & CONFIG)
 // ==========================================
 
-// Slider Utama (Hero Section)
 model HeroSlide {
   id          String   @id @default(cuid())
-  tagline     String?  // "New Collection"
-  title       String   // "Nike Air Jordan"
-  subtitle    String?  // "Diskon 50% Hari Ini"
-  image       String   // URL Gambar
+  tagline     String?  
+  title       String   
+  subtitle    String?
+  image       String   
   ctaText     String   @default("Shop Now")
   ctaLink     String   @default("/shop")
-  order       Int      @default(0) // Buat ngatur urutan slide
+  order       Int      @default(0) 
   isActive    Boolean  @default(true)
   
   @@map("cms_hero_slides")
 }
 
-// Banner Promo (Grid Banners)
 model PromoBanner {
   id          String   @id @default(cuid())
-  title       String?  // "Men's Collection"
-  subtitle    String?  // "Spring 2024"
+  title       String?  
+  subtitle    String?  
   image       String
-  link        String   // Klik lari kemana
-  position    String   // "top-left", "bottom-wide" (Buat layout grid)
+  link        String   
+  position    String   
   order       Int      @default(0)
   isActive    Boolean  @default(true)
 
   @@map("cms_promo_banners")
 }
 
-// Featured Categories (Lingkaran Kategori di Home)
 model FeaturedCategory {
   id          String   @id @default(cuid())
   categoryId  String
-  customName  String?  // Kalau mau ganti nama label (opsional)
-  image       String?  // Kalau mau gambar beda dr kategori asli (opsional)
+  customName  String?  
+  image       String?  
   order       Int      @default(0)
   
   category    Category @relation(fields: [categoryId], references: [id])
@@ -264,15 +249,12 @@ model FeaturedCategory {
   @@map("cms_featured_categories")
 }
 
-// Pengaturan Global Website
 model SiteConfig {
   id              String  @id @default("config_main")
   siteName        String  @default("MoneyLabs")
   logoUrl         String?
-  announcementBar String? // Teks jalan di atas
-  
-  // Kontak Info
-  whatsapp        String? 
+  announcementBar String? 
+  whatsapp        String?
   instagram       String?
   email           String?
   address         String? @db.Text
