@@ -33,23 +33,56 @@ export async function createProduct(formData: FormData) {
     .replace(/^-|-$/g, "");
 
   // 4. Simpan ke database sesuai schema.prisma 
-  await prisma.product.create({
-    data: {
-      name,
-      slug,
-      SKU,
-      shortDesc,
-      description,
-      stockStatus,
-      quantity,
-      featured,
-      image,
-      images, // Simpan langsung sebagai string (udah di-join di client) 
-      brandId,
-      categoryId,
-      sizes, // Masuk sebagai JSON 
-    },
-  });
+  const productId = formData.get("productId") as string | null;
+
+  if (productId) {
+    await prisma.product.update({
+      where: { id: productId },
+      data: {
+        name,
+        slug,
+        SKU,
+        shortDesc,
+        description,
+        stockStatus,
+        quantity,
+        featured,
+        image,
+        images,
+        brandId,
+        categoryId,
+        sizes,
+      },
+    });
+  } else {
+    await prisma.product.create({
+      data: {
+        name,
+        slug,
+        SKU,
+        shortDesc,
+        description,
+        stockStatus,
+        quantity,
+        featured,
+        image,
+        images, // Simpan langsung sebagai string (udah di-join di client) 
+        brandId,
+        categoryId,
+        sizes, // Masuk sebagai JSON 
+      },
+    });
+  }
+
+  revalidatePath("/admin/products");
+  redirect("/admin/products");
+}
+
+export async function deleteProduct(formData: FormData) {
+  const productId = formData.get("productId") as string;
+  if (!productId) return;
+
+  await prisma.product.delete({ where: { id: productId } });
 
   revalidatePath("/admin/products");
   redirect("/admin/products");

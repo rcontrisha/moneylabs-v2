@@ -79,35 +79,30 @@ async function main() {
     brandMap[b.slug] = brand
   }
 
-  // 5. Bikin Kategori
+  // 4. CATEGORIES (Basics)
   const catSneakers = await prisma.category.create({ data: { name: 'Sneakers', slug: 'sneakers' } })
   const catRunning = await prisma.category.create({ data: { name: 'Running', slug: 'running' } })
-  const catBasketball = await prisma.category.create({ data: { name: 'Basketball', slug: 'basketball' } })
   const catCasual = await prisma.category.create({ data: { name: 'Casual', slug: 'casual' } })
+  const catBasketball = await prisma.category.create({ data: { name: 'Basketball', slug: 'basketball' } })
 
-  // 6. SETUP VISUAL CATEGORIES
-  await prisma.featuredCategory.createMany({
-    data: [
-      {
-        categoryId: catSneakers.id,
-        customName: "MEN'S SNEAKERS",
-        image: "https://images.unsplash.com/flagged/photo-1556746834-cbb4a38ee593?q=80&w=1172&auto=format&fit=crop",
-        order: 1
-      },
-      {
-        categoryId: catRunning.id,
-        customName: "WOMEN'S RUNNING",
-        image: "https://images.unsplash.com/photo-1597586785094-c9c247ec343f?q=80&w=1170&auto=format&fit=crop",
-        order: 2
-      },
-      {
-        categoryId: catCasual.id,
-        customName: "KIDS COLLECTION",
-        image: "https://images.unsplash.com/photo-1514989940723-e8e51635b782?q=80&w=1170&auto=format&fit=crop",
-        order: 3
+  // 5. FEATURED CATEGORIES (The "Footlocker" Grid Assets)
+  const featuredConfigs = [
+    { cat: catSneakers, name: 'Sneakers', img: '/assets/categories/moneylabs-sneakers.png', order: 1 },
+    { cat: catRunning, name: 'Running', img: '/assets/categories/moneylabs-running.png', order: 2 },
+    { cat: catCasual, name: 'Casual', img: '/assets/categories/moneylabs-casual.png', order: 3 },
+    { cat: catBasketball, name: 'Basketball', img: '/assets/categories/moneylabs-basketball.png', order: 4 },
+  ]
+
+  for (const config of featuredConfigs) {
+    await prisma.featuredCategory.create({
+      data: {
+        categoryId: config.cat.id,
+        customName: config.name,
+        image: config.img,
+        order: config.order,
       }
-    ]
-  })
+    })
+  }
 
   // 7. Bikin Produk (Dynamic JSON Sizes & Pricing)
   const productsToSeed = [

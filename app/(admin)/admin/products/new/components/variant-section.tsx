@@ -11,17 +11,33 @@ export function VariantSection({ type, data, onChange }: any) {
     defects: type === 'used' ? "" : undefined,
     includes: type === 'used' ? "" : undefined
   }]);
+  // Helper: format number to Indonesian thousands separator (Rupiah style)
+  const formatRupiah = (val: number | null | undefined) => {
+    if (val === null || val === undefined) return "";
+    const n = Number(val || 0);
+    if (!n) return ""; // hide initial 0
+    return n.toLocaleString('id-ID');
+  };
 
-  const update = (idx: number, field: string, val: string) => {
-  const updated = [...data];
-  // 🚀 FIX: Kasih fallback 0 kalau user ngosongin input biar gak jadi NaN 
-  const parsedValue = field === 'regularPrice' || field === 'salePrice' || field === 'stock'
-    ? (parseInt(val) || 0) 
-    : val;
+  const sanitizeNumberString = (s: string) => s.replace(/\D/g, '');
 
-  updated[idx] = { ...updated[idx], [field]: parsedValue };
-  onChange(updated);
-};
+  const update = (idx: number, field: string, val: any) => {
+    const updated = [...data];
+
+    let parsedValue: any;
+    if (field === 'salePrice') {
+      // empty -> null, otherwise integer
+      if (val === '' || val === null || val === undefined) parsedValue = null;
+      else parsedValue = parseInt(sanitizeNumberString(String(val))) || 0;
+    } else if (field === 'regularPrice' || field === 'stock') {
+      parsedValue = parseInt(sanitizeNumberString(String(val))) || 0;
+    } else {
+      parsedValue = val;
+    }
+
+    updated[idx] = { ...updated[idx], [field]: parsedValue };
+    onChange(updated);
+  };
 
   return (
     <div className="rounded-lg border border-zinc-100 bg-white p-6 shadow-sm">
@@ -41,14 +57,14 @@ export function VariantSection({ type, data, onChange }: any) {
                 <Label className="text-[10px] font-bold text-zinc-400 uppercase tracking-tighter">Size</Label>
                 <Input value={item.size} onChange={(e) => update(idx, 'size', e.target.value)} className="h-8 bg-white text-xs" />
               </div>
-              <div className="flex-1 space-y-1">
-                <Label className="text-[10px] font-bold text-zinc-400 uppercase tracking-tighter">Reg. Price</Label>
-                <Input type="number" value={item.regularPrice} onChange={(e) => update(idx, 'regularPrice', parseInt(e.target.value))} className="h-8 bg-white text-xs" />
-              </div>
-              <div className="flex-1 space-y-1">
-                <Label className="text-[10px] font-bold text-zinc-400 uppercase tracking-tighter">Sale Price</Label>
-                <Input type="number" value={item.salePrice || ""} onChange={(e) => update(idx, 'salePrice', e.target.value ? parseInt(e.target.value) : null)} className="h-8 bg-white text-xs" placeholder="Optional" />
-              </div>
+                    <div className="flex-1 space-y-1">
+                      <Label className="text-[10px] font-bold text-zinc-400 uppercase tracking-tighter">Reg. Price</Label>
+                      <Input type="text" value={formatRupiah(item.regularPrice)} onChange={(e) => update(idx, 'regularPrice', e.target.value)} className="h-8 bg-white text-xs" />
+                    </div>
+                    <div className="flex-1 space-y-1">
+                      <Label className="text-[10px] font-bold text-zinc-400 uppercase tracking-tighter">Sale Price</Label>
+                      <Input type="text" value={item.salePrice === null ? "" : formatRupiah(item.salePrice)} onChange={(e) => update(idx, 'salePrice', e.target.value)} className="h-8 bg-white text-xs" placeholder="Optional" />
+                    </div>
               <div className="w-16 space-y-1">
                 <Label className="text-[10px] font-bold text-zinc-400 uppercase tracking-tighter">Stock</Label>
                 <Input type="number" value={item.stock} onChange={(e) => update(idx, 'stock', parseInt(e.target.value))} className="h-8 bg-white text-xs" />

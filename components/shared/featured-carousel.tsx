@@ -36,15 +36,15 @@ export default function FeaturedCarousel({ title, exploreLink, products }: Featu
   const scrollNext = React.useCallback(() => api?.scrollNext(), [api]);
 
   return (
-    <div className="w-full py-10"> {/* Container utama dikasih padding */}
+    <div className="w-full"> {/* Container utama dikasih padding */}
       <div className="mb-8 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
         
         {/* Bagian Kiri: Judul & Garis */}
         <div>
-          <h2 className="text-3xl font-black uppercase italic tracking-tighter leading-none md:text-4xl">
+          <h2 className="text-4xl font-black uppercase italic tracking-tighter leading-none">
             {title}
           </h2>
-          <div className="mt-4 h-2 w-24 bg-primary rounded-full" />
+          <div className="mt-4 h-1.5 w-20 bg-black rounded-none" />
         </div>
 
         {/* Bagian Kanan: Navigasi & Explore Link */}

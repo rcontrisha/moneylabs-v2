@@ -1,55 +1,106 @@
-// app/page.tsx
+// app/(shop)/page.tsx
 import { prisma } from "@/lib/prisma";
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 // Components
 import HeroSlider from "@/components/shared/hero-slider";
 import BrandWall from "@/components/shared/brand-wall";         
 import VisualCategories from "@/components/shared/visual-categories"; 
-import FeaturedCarousel from "@/components/shared/featured-carousel"; // Import Carousel Baru
+import FeaturedCarousel from "@/components/shared/featured-carousel";
 import BenefitsSection from "@/components/shared/benefits";
 import PromoBanner from "@/components/shared/promo-banner";
 
 export default async function HomePage() {
-  const slides = await prisma.heroSlide.findMany({ where: { isActive: true }, orderBy: { order: "asc" } });
-  const brands = await prisma.brand.findMany({});
-  const visualCategories = await prisma.featuredCategory.findMany({ include: { category: true }, orderBy: { order: "asc" } });
+  // 1. Fetching Global Data (Paralel biar kenceng)
+  const [slides, brands, visualCategories] = await Promise.all([
+    prisma.heroSlide.findMany({ where: { isActive: true }, orderBy: { order: "asc" } }),
+    prisma.brand.findMany({}),
+    prisma.featuredCategory.findMany({ include: { category: true }, orderBy: { order: "asc" } })
+  ]);
 
+  // 🚀 2. Fetching Product Sections (Corrected Logic)
+  
+  // Section A: Featured Drops
   const featuredProducts = await prisma.product.findMany({
     where: { featured: true, stockStatus: 'instock' },
-    take: 15, 
+    take: 10, 
+    include: { brand: true, category: true },
+    orderBy: { updatedAt: "desc" },
+  });
+
+  // 🚀 Section B: USED STEALS (The Fix)
+  // Kita gak nyari di deskripsi lagi wir. Kita cek langsung ke JSON 'sizes'.
+  // Logic: Cari produk yang array 'used'-nya di dalem JSON TIDAK kosong ([]).
+  const usedSteals = await prisma.product.findMany({
+    where: { 
+      stockStatus: 'instock',
+      NOT: {
+        sizes: {
+          path: "$.used",
+          equals: [] // Filter produk yang used-nya kosong wir
+        }
+      }
+    },
+    take: 10,
     include: { brand: true, category: true },
     orderBy: { createdAt: "desc" },
   });
 
+  // Section C: New Arrivals
+  const newArrivals = await prisma.product.findMany({
+    where: { stockStatus: 'instock' },
+    orderBy: { createdAt: "desc" },
+    take: 10,
+    include: { brand: true, category: true },
+  });
+
   return (
     <div className="flex flex-col pb-16 bg-white">
+      {/* 1. Main Hero Area */}
       <HeroSlider data={slides} />
+      
+      {/* 2. Brand & Category Navigation */}
       <BrandWall brands={brands} />
-      <VisualCategories categories={visualCategories} />
 
-      {/* SECTION 4: FEATURED DROPS */}
+      {/* 3. SECTION: NEW ARRIVALS (White BG) */}
       <section className="mx-auto w-full max-w-[1600px] px-4 sm:px-6 lg:px-10 py-16">
-        {featuredProducts.length > 0 ? (
-          /* Kita panggil Carousel yang udah kita set 5 produk per slide sebelumnya */
-          <FeaturedCarousel 
-            title="Featured Drops" 
-            exploreLink="/shop"
-            products={featuredProducts} 
-          />
-        ) : (
-          <div className="py-20 text-center font-bold text-muted-foreground uppercase tracking-widest text-xs opacity-50">
-            No Drops Available
-          </div>
-        )}
+        <FeaturedCarousel 
+          title="New Arrivals" 
+          exploreLink="/shop?sort=newest"
+          products={newArrivals} 
+        />
       </section>
 
-      <PromoBanner />
-      <div className="mt-10">
-        <BenefitsSection />
+      <VisualCategories categories={visualCategories} />
+
+      {/* 4. SECTION: FEATURED DROPS (White BG) */}
+      <section className="mx-auto w-full max-w-[1600px] px-4 sm:px-6 lg:px-10 py-16">
+        <FeaturedCarousel 
+          title="Featured Drops" 
+          exploreLink="/shop?featured=true"
+          products={featuredProducts} 
+        />
+      </section>
+
+      {/* 🚀 5. SECTION: USED STEALS (Zinc Alternate Section) */}
+      {/* Kita kasih warna background beda dikit biar section Used ini "pop-out" */}
+      <section className="w-full bg-zinc-50/50 border-y border-zinc-100">
+        <div className="mx-auto max-w-[1600px] px-4 sm:px-6 lg:px-10">
+          <FeaturedCarousel 
+            title="Used Steals" 
+            exploreLink="/shop?condition=used"
+            products={usedSteals} 
+          />
+        </div>
+      </section>
+
+      {/* 6. Footer Banner */}
+      <div className="w-full max-w-[1600px] py-16">
+        <PromoBanner />
       </div>
+
+      {/* 7. Benefits & Trust */}
+      <BenefitsSection />
+
     </div>
   );
 }

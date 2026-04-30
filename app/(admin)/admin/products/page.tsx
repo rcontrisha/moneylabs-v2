@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Plus, Search, Edit2, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { deleteProduct } from "@/lib/actions/product";
 
 export default async function AdminProductsPage() {
   const products = await prisma.product.findMany({
@@ -72,12 +73,18 @@ export default async function AdminProductsPage() {
                 </td>
                 <td className="px-8 py-6 text-right">
                   <div className="flex justify-end gap-2">
-                    <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-zinc-100">
-                      <Edit2 className="h-4 w-4 text-zinc-500" />
+                    <Button asChild variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-zinc-100">
+                      <Link href={`/admin/products/edit/${product.id}`}>
+                        <Edit2 className="h-4 w-4 text-zinc-500" />
+                      </Link>
                     </Button>
-                    <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-red-50 hover:text-red-500">
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+
+                    <form action={deleteProduct} method="post">
+                      <input type="hidden" name="productId" value={product.id} />
+                      <Button type="submit" variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-red-50 hover:text-red-500">
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </form>
                   </div>
                 </td>
               </tr>

@@ -60,7 +60,7 @@ export default function ProductCard({ data }: ProductCardProps) {
     <div className="group flex w-full flex-col gap-2 bg-white transition-all duration-300">
       
       {/* 1. Image Container: Compact Rectangular  */}
-      <div className="relative aspect-[3/2] w-full overflow-hidden bg-[#F6F6F6] border border-zinc-100/50">
+      <div className="relative aspect-[5/3] w-full overflow-hidden bg-[#F6F6F6] border border-zinc-100/50">
         <Image
           src={data.image || "/assets/placeholder.svg"}
           alt={data.name}
