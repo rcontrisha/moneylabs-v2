@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { Brand, Category } from "@prisma/client";
 import { createProduct } from "@/lib/actions/product";
 import { Button } from "@/components/ui/button";
@@ -16,36 +16,47 @@ import { MediaSection } from "./components/media-section";
 export default function ProductForm({ brands, categories, initialData }: { brands: Brand[], categories: Category[], initialData?: any }) {
   // Initialize form state from initialData when editing, fallback to defaults for create
   const [images, setImages] = useState<(string | null)[]>(() => {
-    if (initialData?.images) {
-      // product.images stored as comma-separated string in DB
-      const imgs = String(initialData.images || '').split(',').filter(Boolean);
-      // keep first 4 slots
-      return [imgs[0] || null, imgs[1] || null, imgs[2] || null, imgs[3] || null];
-    }
-    return [null, null, null, null];
+    // DB stores main cover in `product.image` and the gallery in `product.images` (comma-separated)
+    const imgsField = initialData?.images ? String(initialData.images).split(',').filter(Boolean) : [];
+    // prefer explicit main cover field, otherwise take first from imgsField
+    const main = initialData?.image || imgsField.shift() || null;
+    return [
+      main,
+      imgsField[0] || null,
+      imgsField[1] || null,
+      imgsField[2] || null,
+    ];
   }); 
   const [isFeatured, setIsFeatured] = useState<boolean>(() => !!initialData?.featured);
-  const [sku, setSku] = useState<string>(() => initialData?.SKU || "");
+  // keep SKU coming from initialData when editing; otherwise we'll derive one for create
   const [productName, setProductName] = useState<string>(() => initialData?.name || "");
   const [selectedBrandId, setSelectedBrandId] = useState<string>(() => initialData?.brandId || "");
-  const [sizes, setSizes] = useState(() => {
+  type SizeVariant = { size: string; regularPrice: number; salePrice: number | null; stock: number };
+
+  const [sizes, setSizes] = useState<{ new: SizeVariant[]; used: SizeVariant[] }>(() => {
     if (initialData?.sizes) {
       try {
         return typeof initialData.sizes === 'string' ? JSON.parse(initialData.sizes) : initialData.sizes;
-      } catch (e) {
+      } catch {
         return { new: [], used: [] };
       }
     }
     return { new: [{ size: "40", regularPrice: 0, salePrice: null, stock: 5 }], used: [] };
   });
 
-  // 🚀 AUTOMATIC SKU GENERATION
-  useEffect(() => {
-    if (!productName) {
-      setSku("");
-      return;
+  // 🚀 DERIVED SKU (computed when creating; keep existing SKU when editing)
+  // Use a pure deterministic suffix function to avoid impure calls in render.
+  const deterministicSuffix = (input: string) => {
+    let n = 0;
+    for (let i = 0; i < input.length; i++) {
+      n = (n * 31 + input.charCodeAt(i)) | 0;
     }
+    const s = Math.abs(n).toString(36).toUpperCase();
+    return s.slice(-4).padStart(4, "0");
+  };
 
+  const generatedSku = useMemo(() => {
+    if (!productName) return "";
     const brand = brands.find(b => b.id === selectedBrandId)?.name || "ML";
     const nameSlug = productName
       .toLowerCase()
@@ -55,16 +66,17 @@ export default function ProductForm({ brands, categories, initialData }: { brand
       .slice(0, 2)
       .join('-')
       .toUpperCase();
-    
-    // Format: BRAND-NAME-RANDOM (4 digit)
-    const randomSuffix = Math.random().toString(36).substring(2, 6).toUpperCase();
-    setSku(`${brand.substring(0, 3).toUpperCase()}-${nameSlug}-${randomSuffix}`);
+
+    const suffix = deterministicSuffix(`${brand}-${nameSlug}`);
+    return `${brand.substring(0, 3).toUpperCase()}-${nameSlug}-${suffix}`;
   }, [productName, selectedBrandId, brands]);
+
+  const displayedSku = initialData?.SKU || generatedSku;
 
   // AUTOMATIC QUANTITY CALCULATION
   const totalQuantity = useMemo(() => {
-    const newStock = sizes.new.reduce((acc, curr) => acc + (Number(curr.stock) || 0), 0);
-    const usedStock = sizes.used.reduce((acc, curr) => acc + (Number(curr.stock) || 0), 0);
+    const newStock = sizes.new.reduce((acc: number, curr: SizeVariant) => acc + (Number(curr.stock) || 0), 0);
+    const usedStock = sizes.used.reduce((acc: number, curr: SizeVariant) => acc + (Number(curr.stock) || 0), 0);
     return newStock + usedStock;
   }, [sizes]);
 
@@ -82,7 +94,7 @@ export default function ProductForm({ brands, categories, initialData }: { brand
         <GeneralInfo 
           brands={brands} 
           categories={categories} 
-          sku={sku} 
+          sku={displayedSku}
           onNameChange={setProductName}
           onBrandChange={setSelectedBrandId}
           nameDefault={initialData?.name}
@@ -97,12 +109,12 @@ export default function ProductForm({ brands, categories, initialData }: { brand
             name="description" 
             placeholder="Detailed product specifications..." 
             defaultValue={initialData?.description || ''}
-            className="min-h-[200px] border-zinc-200 text-sm focus-visible:ring-zinc-950"
+            className="min-h-50 border-zinc-200 text-sm focus-visible:ring-zinc-950"
           />
         </div>
 
-        <VariantSection type="new" data={sizes.new} onChange={(val: any) => setSizes({ ...sizes, new: val })} />
-        <VariantSection type="used" data={sizes.used} onChange={(val: any) => setSizes({ ...sizes, used: val })} />
+  <VariantSection type="new" data={sizes.new} onChange={(val: SizeVariant[]) => setSizes({ ...sizes, new: val })} />
+  <VariantSection type="used" data={sizes.used} onChange={(val: SizeVariant[]) => setSizes({ ...sizes, used: val })} />
       </div>
 
       <div className="lg:col-span-5 space-y-6">
@@ -134,7 +146,7 @@ export default function ProductForm({ brands, categories, initialData }: { brand
   <input type="hidden" name="sizes" value={JSON.stringify(sizes)} />
   <input type="hidden" name="featured" value={isFeatured ? "true" : "false"} />
   <input type="hidden" name="quantity" value={totalQuantity} />
-  <input type="hidden" name="SKU" value={sku} /> {/* 🚀 SKU otomatis dikirim */}
+  <input type="hidden" name="SKU" value={displayedSku} /> {/* 🚀 SKU otomatis dikirim */}
   {initialData?.id && <input type="hidden" name="productId" value={initialData.id} />}
     </form>
   );

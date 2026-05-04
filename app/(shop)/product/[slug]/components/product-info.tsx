@@ -75,7 +75,7 @@ export function ProductInfo({ product }: { product: any }) {
             </>
           ) : (
             <span className="text-3xl font-black text-zinc-950 tracking-tighter">
-              {formatIDR(pricing.minPrice)}
+              {formatIDR(pricing.minPrice ?? 0)}
             </span>
           )}
         </div>
