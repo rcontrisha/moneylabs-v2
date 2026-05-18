@@ -7,7 +7,7 @@ export default function PromoBanner() {
     <section className="w-full">
       {/* Ganti path ini jika kamu menaruh gambar di lokasi lain atau pakai URL */}
       <Image
-        src="/assets/banner/Mid Season Banner.png"
+        src="/assets/banner/Mid Season Banner 2.png"
         alt="Promo Banner"
         width={1600}
         height={600}

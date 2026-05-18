@@ -17,6 +17,7 @@ export default function AdminLayout({
 }) {
   const sidebarLinks = [
     { label: "Dashboard", icon: LayoutDashboard, href: "/admin/dashboard" },
+    { label: "Content Management", icon: LayoutDashboard, href: "/admin/cms/landing" },
     { label: "Products", icon: Package, href: "/admin/products" },
     { label: "Orders", icon: ShoppingBag, href: "/admin/orders" },
     { label: "Customers", icon: Users, href: "/admin/users" },

@@ -14,18 +14,21 @@ import { Button } from "@/components/ui/button";
 import Autoplay from "embla-carousel-autoplay";
 import { cn } from "@/lib/utils";
 
-interface HeroSlideProps {
-  data: {
-    id: string;
-    title: string;
-    subtitle: string | null;
-    image: string;
-    ctaText: string;
-    ctaLink: string;
-  }[];
+interface HeroSlide {
+  id: string;
+  title: string;
+  subtitle: string | null;
+  image: string;
+  ctaText: string;
+  ctaLink: string;
 }
 
-export default function HeroSlider({ data }: HeroSlideProps) {
+interface HeroSliderProps {
+  data: HeroSlide[];
+  compact?: boolean;
+}
+
+export default function HeroSlider({ data, compact = false }: HeroSliderProps) {
   // If no slides provided from CMS, fall back to three local banner images.
   const defaultSlides = [
     { id: "fallback-1", title: "", subtitle: null, image: "/assets/banner/hero-banner-1.png", ctaText: "", ctaLink: "/shop" },
@@ -63,22 +66,26 @@ export default function HeroSlider({ data }: HeroSlideProps) {
         className="w-full"
       >
         <CarouselContent>
-          {slidesToRender.map((slide) => (
-            /* Tetap pake 75vh biar Brand Wall di bawahnya kelihatan dikit */
-            <CarouselItem key={slide.id} className="relative w-full h-[550px] md:h-[650px] lg:h-[75vh] min-h-[600px] lg:max-h-[750px]">
+          {slidesToRender.map((slide, idx) => (
+            /* compact uses smaller heights for admin preview */
+            <CarouselItem
+              key={slide.id}
+              className={compact ? "relative w-full h-[220px] md:h-[320px] lg:h-[360px]" : "relative w-full h-[550px] md:h-[650px] lg:h-[75vh] min-h-[600px] lg:max-h-[750px]"}
+            >
               {/* Background Image */}
               <div className="absolute inset-0">
                 <Image
                   src={slide.image}
                   alt={slide.title}
                   fill
-                  className="object-cover" 
-                  priority
+                  // Only set priority for the first slide for better performance.
+                  priority={idx === 0}
                 />
               </div>
 
               {/* Content Container - render only when slide has a title */}
-              {slide.title ? (
+              {/* hide heavy content when in compact preview mode */}
+              {!compact && slide.title ? (
                 <div className="relative h-full flex items-center justify-center text-center">
                   <div className="max-w-5xl px-4 flex flex-col items-center">
                     {/* Subtitle */}
@@ -113,8 +120,8 @@ export default function HeroSlider({ data }: HeroSlideProps) {
           ))}
         </CarouselContent>
 
-        {/* 🚀 DOTS INDICATOR: Ditaruh di dalem gambar (paling bawah) */}
-        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex gap-3 z-30">
+  {/* 🚀 DOTS INDICATOR: Ditaruh di dalem gambar (paling bawah) */}
+  <div className={compact ? "absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-3 z-30" : "absolute bottom-10 left-1/2 -translate-x-1/2 flex gap-3 z-30"}>
           {Array.from({ length: count }).map((_, index) => (
             <button
               key={index}

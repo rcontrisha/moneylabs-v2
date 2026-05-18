@@ -1,5 +1,5 @@
 // app/(shop)/page.tsx
-import { prisma } from "@/lib/prisma";
+import { getLandingData } from '@/lib/actions/landing';
 
 // Components
 import HeroSlider from "@/components/shared/hero-slider";
@@ -10,48 +10,7 @@ import BenefitsSection from "@/components/shared/benefits";
 import PromoBanner from "@/components/shared/promo-banner";
 
 export default async function HomePage() {
-  // 1. Fetching Global Data (Paralel biar kenceng)
-  const [slides, brands, visualCategories] = await Promise.all([
-    prisma.heroSlide.findMany({ where: { isActive: true }, orderBy: { order: "asc" } }),
-    prisma.brand.findMany({}),
-    prisma.featuredCategory.findMany({ include: { category: true }, orderBy: { order: "asc" } })
-  ]);
-
-  // 🚀 2. Fetching Product Sections (Corrected Logic)
-  
-  // Section A: Featured Drops
-  const featuredProducts = await prisma.product.findMany({
-    where: { featured: true, stockStatus: 'instock' },
-    take: 10, 
-    include: { brand: true, category: true },
-    orderBy: { updatedAt: "desc" },
-  });
-
-  // 🚀 Section B: USED STEALS (The Fix)
-  // Kita gak nyari di deskripsi lagi wir. Kita cek langsung ke JSON 'sizes'.
-  // Logic: Cari produk yang array 'used'-nya di dalem JSON TIDAK kosong ([]).
-  const usedSteals = await prisma.product.findMany({
-    where: { 
-      stockStatus: 'instock',
-      NOT: {
-        sizes: {
-          path: "$.used",
-          equals: [] // Filter produk yang used-nya kosong wir
-        }
-      }
-    },
-    take: 10,
-    include: { brand: true, category: true },
-    orderBy: { createdAt: "desc" },
-  });
-
-  // Section C: New Arrivals
-  const newArrivals = await prisma.product.findMany({
-    where: { stockStatus: 'instock' },
-    orderBy: { createdAt: "desc" },
-    take: 10,
-    include: { brand: true, category: true },
-  });
+  const { slides, brands, visualCategories, featuredProducts, usedSteals, newArrivals } = await getLandingData();
 
   return (
     <div className="flex flex-col pb-16 bg-white">
@@ -88,7 +47,7 @@ export default async function HomePage() {
           <FeaturedCarousel 
             title="Used Steals" 
             exploreLink="/shop?condition=used"
-            products={usedSteals} 
+            products={usedSteals}
           />
         </div>
       </section>

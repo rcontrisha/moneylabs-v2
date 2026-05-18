@@ -1,0 +1,9 @@
+model_list:
+  - model_name: gemini-2.5-flash
+    litellm_params:
+      model: gemini/gemini-flash-latest
+      api_key: ${GEMINI_API_KEY}
+
+litellm_settings:
+  drop_params: true
+  set_thought_signature: true
