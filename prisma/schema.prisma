@@ -112,7 +112,7 @@ model Product {
 
   orderItems             OrderItem[]
   wishlist               Wishlist[]
-  landingSectionProducts LandingSectionProduct[] @relation("ProductLandingSectionProducts", onDelete: Cascade)
+  landingSectionProducts LandingSectionProduct[] @relation("ProductLandingSectionProducts")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -289,7 +289,7 @@ model LandingSectionProduct {
   sortOrder        Int    @default(0)
 
   landingSection LandingSection @relation(fields: [landingSectionId], references: [id], onDelete: Cascade)
-  product        Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product        Product        @relation("ProductLandingSectionProducts", fields: [productId], references: [id], onDelete: Cascade)
 
   @@index([landingSectionId])
   @@map("cms_landing_section_products")

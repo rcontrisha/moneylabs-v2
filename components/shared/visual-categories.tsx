@@ -31,7 +31,7 @@ export default function VisualCategories({ categories }: VisualCategoriesProps) 
           <Link 
             key={item.id} 
             href={`/shop?category=${item.category.slug}`}
-            className="group relative aspect-[4/5] overflow-hidden bg-zinc-100 rounded-none border border-zinc-100"
+            className="group relative aspect-[4/5] overflow-hidden bg-zinc-100 animate-pulse rounded-none border border-zinc-100"
           >
             {/* 🚀 FIX: Pake item.image (dari FeaturedCategory) dulu wir! */}
             <Image 

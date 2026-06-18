@@ -47,11 +47,12 @@ export default function BrandWall({ brands }: BrandWallProps) {
                   href={`/brands/${brand.slug}`}
                   className="group relative flex h-16 w-full items-center justify-center grayscale opacity-40 transition-all duration-500 hover:grayscale-0 hover:opacity-100"
                 >
-                  <div className="relative h-10 w-28">
+                  <div className="relative h-10 w-28 bg-zinc-100 animate-pulse">
                     <Image
                       src={brand.image || "/assets/placeholder.svg"} 
                       alt={brand.name}
                       fill
+                      sizes="7rem"
                       className="object-contain"
                     />
                   </div>

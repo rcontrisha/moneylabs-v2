@@ -47,20 +47,21 @@ export function ProductGallery({ images }: { images: string[] }) {
           <button
             key={idx}
             onClick={() => goToImage(idx)} // Pake goToImage biar timer reset
-            className={cn(
-              "relative aspect-square w-full overflow-hidden border transition-all duration-300 rounded-none",
+              className={cn(
+                "relative aspect-square w-full overflow-hidden border transition-all duration-300 rounded-none bg-zinc-100 animate-pulse",
               activeIdx === idx 
                 ? "border-black ring-1 ring-black p-0.5" 
                 : "border-zinc-100 opacity-60 hover:border-zinc-300 hover:opacity-100"
             )}
           >
-            <Image src={img} alt={`Thumb ${idx}`} fill className="object-contain p-1" />
+            <Image src={img} alt={`Thumb ${idx}`} fill sizes="5rem" className="object-contain p-1" />
           </button>
         ))}
       </div>
 
       {/* 2. Main Preview (Sekarang Berubah Jadi Carousel) */}
       <div className="relative aspect-[3/2] flex-1 bg-[#F6F6F6] border border-zinc-100 overflow-hidden group rounded-none">
+        <div className="absolute inset-0 bg-zinc-200 animate-pulse" />
         
         {/* SLIDING TRACK */}
         <div className="absolute inset-0 overflow-hidden">
@@ -75,6 +76,8 @@ export function ProductGallery({ images }: { images: string[] }) {
                   alt={`Product detail ${idx + 1}`}
                   fill
                   priority={idx === 0}
+                  fetchPriority={idx === 0 ? "high" : undefined}
+                  sizes="(max-width: 1024px) calc(100vw - 6rem), 60vw"
                   className="object-contain p-12"
                 />
               </div>

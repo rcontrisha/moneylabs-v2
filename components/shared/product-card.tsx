@@ -61,11 +61,12 @@ export default function ProductCard({ data }: ProductCardProps) {
       
       {/* 1. Image Container: Compact Rectangular  */}
       <div className="relative aspect-[5/3] w-full overflow-hidden bg-[#F6F6F6] border border-zinc-100/50">
+        <div className="absolute inset-0 bg-zinc-200 animate-pulse" />
         <Image
           src={data.image || "/assets/placeholder.svg"}
           alt={data.name}
           fill
-          sizes="(max-width: 100%) 50vw, 20vw"
+          sizes="(max-width: 768px) 50vw, 20vw"
         />
 
         {/* Minimalist Sale Badge: Hitam Solid  */}

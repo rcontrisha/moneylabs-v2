@@ -73,13 +73,13 @@ export default function HeroSlider({ data, compact = false }: HeroSliderProps) {
               className={compact ? "relative w-full h-[220px] md:h-[320px] lg:h-[360px]" : "relative w-full h-[550px] md:h-[650px] lg:h-[75vh] min-h-[600px] lg:max-h-[750px]"}
             >
               {/* Background Image */}
-              <div className="absolute inset-0">
+              <div className="absolute inset-0 bg-zinc-800 animate-pulse">
                 <Image
                   src={slide.image}
                   alt={slide.title}
                   fill
-                  // Only set priority for the first slide for better performance.
                   priority={idx === 0}
+                  fetchPriority={idx === 0 ? "high" : undefined}
                 />
               </div>
 

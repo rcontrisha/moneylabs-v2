@@ -1,9 +1,10 @@
 model_list:
   - model_name: gemini-2.5-flash
     litellm_params:
-      model: gemini/gemini-flash-latest
-      api_key: ${GEMINI_API_KEY}
+      model: gemini/gemini-2.5-flash
+      api_key: AIzaSyCwQoWORMdgEnbfK5pUxfJ5cZDW30Nb98k
 
 litellm_settings:
   drop_params: true
-  set_thought_signature: true
+  allowed_openai_params: ["metadata", "tools", "tool_choice"]
+  # set_thought_signature: false
