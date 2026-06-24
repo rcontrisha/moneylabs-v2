@@ -41,19 +41,15 @@ async function main() {
   await prisma.heroSlide.createMany({
     data: [
       {
-        title: 'New Arrival 2026',
-        subtitle: 'Koleksi Sepatu Terbaik Musim Ini',
         image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=2070', 
-        ctaText: 'Belanja Sekarang',
-        ctaLink: '/shop',
+        link: '/shop',
+        altText: 'New Arrival 2026',
         order: 1,
       },
       {
-        title: 'Nike Air Jordan',
-        subtitle: 'Diskon 30% Khusus Member',
         image: 'https://images.unsplash.com/photo-1552346154-21d32810aba3?q=80&w=2070',
-        ctaText: 'Cek Detail',
-        ctaLink: '/shop',
+        link: '/shop',
+        altText: 'Nike Air Jordan',
         order: 2,
       },
     ],

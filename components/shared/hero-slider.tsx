@@ -16,11 +16,11 @@ import { cn } from "@/lib/utils";
 
 interface HeroSlide {
   id: string;
-  title: string;
-  subtitle: string | null;
+  title?: string;
+  subtitle?: string | null;
   image: string;
-  ctaText: string;
-  ctaLink: string;
+  ctaText?: string;
+  ctaLink?: string;
 }
 
 interface HeroSliderProps {
@@ -76,7 +76,7 @@ export default function HeroSlider({ data, compact = false }: HeroSliderProps) {
               <div className="absolute inset-0 bg-zinc-800 animate-pulse">
                 <Image
                   src={slide.image}
-                  alt={slide.title}
+                  alt={slide.title ?? ""}
                   fill
                   className="object-cover"
                   sizes="100vw"
@@ -112,7 +112,7 @@ export default function HeroSlider({ data, compact = false }: HeroSliderProps) {
                     {/* CTA Button */}
                     <div className="pt-8 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-300">
                       <Button asChild size="lg" className="h-12 md:h-14 px-10 md:px-12 rounded-full font-bold uppercase tracking-widest text-base bg-primary text-white hover:bg-primary/90 transition-all hover:scale-105 shadow-[0_0_20px_rgba(var(--primary),0.4)]">
-                        <Link href={slide.ctaLink}>{slide.ctaText}</Link>
+                        <Link href={slide.ctaLink ?? "/shop"}>{slide.ctaText}</Link>
                       </Button>
                     </div>
                   </div>
