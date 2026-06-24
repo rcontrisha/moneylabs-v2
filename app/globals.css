@@ -56,9 +56,8 @@
   --popover-foreground: oklch(0.141 0.005 285.823);
   
   /* 🔥 UPDATE: WARNA IJO MONEYLABS (Primary) */
-  /* Vibrant Lab Green (Mirip logo) */
   --primary: oklch(0.55 0.2 144); 
-  --primary-foreground: oklch(1 0 0); /* Teks Putih */
+  --primary-foreground: oklch(1 0 0); 
   
   --secondary: oklch(0.967 0.001 286.375);
   --secondary-foreground: oklch(0.21 0.006 285.885);
@@ -70,7 +69,6 @@
   --border: oklch(0.92 0.004 286.32);
   --input: oklch(0.92 0.004 286.32);
   
-  /* Ring fokus juga di-ijo-in */
   --ring: oklch(0.55 0.2 144); 
   
   --chart-1: oklch(0.646 0.222 41.116);
@@ -96,9 +94,8 @@
   --popover: oklch(0.21 0.006 285.885);
   --popover-foreground: oklch(0.985 0 0);
   
-  /* 🔥 UPDATE: Ijo lebih terang dikit buat Dark Mode */
   --primary: oklch(0.65 0.2 144); 
-  --primary-foreground: oklch(0.141 0.005 285.823); /* Teks Hitam biar kontras */
+  --primary-foreground: oklch(0.141 0.005 285.823); 
   
   --secondary: oklch(0.274 0.006 286.033);
   --secondary-foreground: oklch(0.985 0 0);
@@ -110,7 +107,6 @@
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   
-  /* Ring dark mode */
   --ring: oklch(0.65 0.2 144);
   
   --chart-1: oklch(0.488 0.243 264.376);
@@ -128,8 +124,61 @@
   --sidebar-ring: oklch(0.552 0.016 285.938);
 }
 
-.scrollbar-hide::-webkit-scrollbar { display: none; }
-::selection { background: #bef264; color: #000; }
+/* ==========================================================================
+   🚀 STRATEGI BARU: SEMBUNYIKAN HANYA PADA ELEMENT YANG TIDAK MEMILIKI UTILITY
+   ========================================================================== */
+
+/* Hilangkan scrollbar default di Firefox global untuk html & body */
+html, body {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+/* Sembunyikan scrollbar Webkit secara global KECUALI yang punya class kustom */
+::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+  display: none;
+}
+
+/* ==========================================================================
+   🚀 FORCED SPECIFICITY: PAKSA PROPERTI MAKSIMAL PAKE UTILITY LAYER TAILWIND
+   ========================================================================== */
+@utility filter-scrollbar {
+  scrollbar-width: thin !important;
+  scrollbar-color: #000000 transparent !important;
+  -ms-overflow-style: auto !important;
+
+  &::-webkit-scrollbar {
+    display: block !important;
+    width: 2px !important;
+    height: auto !important;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent !important;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #000000 !important;
+    border-radius: 0px !important;
+  }
+
+  &::-webkit-scrollbar-button {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+  }
+}
+
+/* Dark mode utility overrider */
+@utility dark-filter-scrollbar {
+  scrollbar-color: #ffffff transparent !important;
+  
+  &::-webkit-scrollbar-thumb {
+    background: #ffffff !important;
+  }
+}
 
 @layer base {
   * {

@@ -125,6 +125,7 @@ model Product {
 // ==========================================
 
 enum OrderStatus {
+  pending_payment
   ordered
   delivered
   canceled
@@ -182,12 +183,15 @@ model OrderItem {
 }
 
 model Transaction {
-  id        String   @id @default(cuid())
-  userId    String   @map("user_id")
-  orderId   String   @unique @map("order_id")
-  mode      String
-  status    String
-  createdAt DateTime @default(now())
+  id          String   @id @default(cuid())
+  userId      String   @map("user_id")
+  orderId     String   @unique @map("order_id")
+  mode        String
+  status      String
+  midtransId  String?  @map("midtrans_id")
+  paymentType String?  @map("payment_type")
+  payload     Json?
+  createdAt   DateTime @default(now())
 
   user  User  @relation(fields: [userId], references: [id])
   order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)

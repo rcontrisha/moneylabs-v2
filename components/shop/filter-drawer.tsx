@@ -7,10 +7,11 @@ import FilterSidebar from "@/components/shop/filter-sidebar";
 interface FilterDrawerProps {
   brands: Brand[];
   categories: Category[];
+  sizes: string[];
   maxPrice: number;
 }
 
-export default function FilterDrawer({ brands, categories, maxPrice }: FilterDrawerProps) {
+export default function FilterDrawer({ brands, categories, sizes, maxPrice }: FilterDrawerProps) {
   return (
     <div className="relative">
       <button
@@ -25,7 +26,7 @@ export default function FilterDrawer({ brands, categories, maxPrice }: FilterDra
       </button>
       <div className="hidden absolute top-full left-0 mt-2 z-40 bg-white border border-zinc-200 p-4 w-64 shadow-lg">
         <Suspense fallback={null}>
-          <FilterSidebar brands={brands} categories={categories} maxPrice={maxPrice} />
+          <FilterSidebar brands={brands} categories={categories} sizes={sizes} maxPrice={maxPrice} />
         </Suspense>
       </div>
     </div>

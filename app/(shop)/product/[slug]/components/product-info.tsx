@@ -4,10 +4,13 @@
 import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { useCartStore } from "@/lib/stores/cart-store";
 
 export function ProductInfo({ product }: { product: any }) {
   const [condition, setCondition] = useState<"new" | "used">("new");
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [added, setAdded] = useState(false);
+  const addItem = useCartStore((s) => s.addItem);
 
   const sizes = product.sizes as any;
   const currentVariants = condition === "new" ? sizes?.new || [] : sizes?.used || [];
@@ -127,7 +130,31 @@ export function ProductInfo({ product }: { product: any }) {
       )}
 
       <div className="pt-4 space-y-3">
-        <Button className="w-full h-14 bg-zinc-950 text-white font-black uppercase tracking-widest hover:bg-zinc-800 rounded-none transition-all">Add to Cart</Button>
+        <Button
+          onClick={() => {
+            const variant = currentVariants.find((v: any) => v.size === selectedSize);
+            if (!variant || !selectedSize) return;
+
+            addItem({
+              productId: product.id,
+              slug: product.slug,
+              name: product.name,
+              image: product.image,
+              brandName: product.brand?.name ?? "",
+              size: selectedSize,
+              condition,
+              regularPrice: variant.regularPrice,
+              salePrice: variant.salePrice,
+            });
+
+            setAdded(true);
+            setTimeout(() => setAdded(false), 1500);
+          }}
+          disabled={!selectedSize}
+          className="w-full h-14 bg-zinc-950 text-white font-black uppercase tracking-widest hover:bg-zinc-800 rounded-none transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          {added ? "Added ✓" : "Add to Cart"}
+        </Button>
         <div className="flex items-center justify-center gap-2">
            <div className={`h-1.5 w-1.5 rounded-full ${product.stockStatus === 'instock' ? 'bg-green-500' : 'bg-red-500'}`} />
            <span className="text-[10px] font-bold uppercase text-zinc-400 tracking-widest">{product.stockStatus === 'instock' ? 'In Stock' : 'Out of Stock'}</span>

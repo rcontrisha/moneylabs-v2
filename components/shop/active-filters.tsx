@@ -6,6 +6,7 @@ import { Brand, Category } from "@prisma/client";
 interface ActiveFiltersProps {
   brands: Brand[];
   categories: Category[];
+  sizes: string[];
 }
 
 const SORT_LABELS: Record<string, string> = {
@@ -19,6 +20,7 @@ export default function ActiveFilters({ brands, categories }: ActiveFiltersProps
 
   const activeBrands = searchParams.getAll("brand");
   const activeCategories = searchParams.getAll("category");
+  const activeSizes = searchParams.getAll("size");
   const activeCondition = searchParams.getAll("condition");
   const inStock = searchParams.get("inStock") === "true";
   const minPrice = searchParams.get("minPrice");
@@ -35,6 +37,10 @@ export default function ActiveFilters({ brands, categories }: ActiveFiltersProps
   activeCategories.forEach((slug) => {
     const cat = categories.find((c) => c.slug === slug);
     if (cat) chips.push({ key: `category-${slug}`, label: cat.name });
+  });
+
+  activeSizes.forEach((s) => {
+    chips.push({ key: `size-${s}`, label: s });
   });
 
   activeCondition.forEach((c) => {
@@ -72,6 +78,11 @@ export default function ActiveFilters({ brands, categories }: ActiveFiltersProps
       const curr = params.getAll("category").filter((v) => v !== slug);
       params.delete("category");
       curr.forEach((v) => params.append("category", v));
+    } else if (key.startsWith("size-")) {
+      const s = key.replace("size-", "");
+      const curr = params.getAll("size").filter((v) => v !== s);
+      params.delete("size");
+      curr.forEach((v) => params.append("size", v));
     } else if (key.startsWith("condition-")) {
       const cond = key.replace("condition-", "");
       const curr = params.getAll("condition").filter((v) => v !== cond);

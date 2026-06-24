@@ -79,6 +79,11 @@ export default async function ShopPage({
       ? sp.condition
       : [sp.condition]
     : [];
+  const sizeFilter = sp.size
+    ? Array.isArray(sp.size)
+      ? sp.size
+      : [sp.size]
+    : [];
   const inStockOnly = sp.inStock === "true";
   const minPrice = sp.minPrice ? Number(sp.minPrice) : undefined;
   const maxPrice = sp.maxPrice ? Number(sp.maxPrice) : undefined;
@@ -95,7 +100,7 @@ export default async function ShopPage({
   const orderBy: Prisma.ProductOrderByWithRelationInput =
     { createdAt: "desc" };
 
-  const [rawProducts, brands, categories] = await Promise.all([
+  const [rawProducts, brands, categories, allSizesData] = await Promise.all([
     prisma.product.findMany({
       where,
       include: { brand: true, category: true },
@@ -103,7 +108,23 @@ export default async function ShopPage({
     }),
     prisma.brand.findMany(),
     prisma.category.findMany(),
+    prisma.product.findMany({ select: { sizes: true } }),
   ]);
+
+  const sizeSet = new Set<string>();
+  for (const p of allSizesData) {
+    const pSizes = p.sizes as unknown as ProductSizes | null;
+    const variants = [...(pSizes?.new || []), ...(pSizes?.used || [])];
+    for (const v of variants) {
+      if (v.size) sizeSet.add(v.size);
+    }
+  }
+  const allSizes = Array.from(sizeSet).sort((a, b) => {
+    const numA = parseFloat(a.replace(/^US\s*/i, ""));
+    const numB = parseFloat(b.replace(/^US\s*/i, ""));
+    if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
+    return a.localeCompare(b);
+  });
 
   let products = rawProducts as ProductWithRelations[];
 
@@ -126,6 +147,14 @@ export default async function ShopPage({
         (conditionFilter.includes("new") && hasNew) ||
         (conditionFilter.includes("used") && hasUsed)
       );
+    });
+  }
+
+  if (sizeFilter.length > 0) {
+    products = products.filter((p) => {
+      const pSizes = p.sizes as unknown as ProductSizes | null;
+      const variants = [...(pSizes?.new || []), ...(pSizes?.used || [])];
+      return variants.some((v) => sizeFilter.includes(v.size));
     });
   }
 
@@ -172,9 +201,9 @@ export default async function ShopPage({
     <div className="container mx-auto px-4 pt-4 pb-16 md:px-6 lg:px-8 select-none">
       <div className="grid grid-cols-1 md:grid-cols-[240px_1fr] lg:grid-cols-[280px_1fr] gap-x-8 lg:gap-x-12 mt-4">
         {/* Left Sidebar Column */}
-        <div className="hidden md:block sticky top-24 max-h-[calc(100vh-6rem)] overflow-y-auto pb-4 pr-4 border-r border-zinc-200">
+        <div className="hidden md:block sticky top-24 max-h-[calc(100vh-6rem)] overflow-y-auto pb-4 pr-4 border-r border-zinc-200 filter-scrollbar">
           <Suspense fallback={null}>
-            <FilterSidebar brands={brands} categories={categories} maxPrice={overallMaxPrice} />
+            <FilterSidebar brands={brands} categories={categories} sizes={allSizes} maxPrice={overallMaxPrice} />
           </Suspense>
         </div>
 
@@ -182,7 +211,7 @@ export default async function ShopPage({
         <div className="flex flex-col">
           <div className="flex items-start justify-between mb-4 gap-4">
             <Suspense fallback={null}>
-              <ActiveFilters brands={brands} categories={categories} />
+              <ActiveFilters brands={brands} categories={categories} sizes={allSizes} />
             </Suspense>
             <Suspense fallback={null}>
               <SortDropdown />
@@ -192,12 +221,12 @@ export default async function ShopPage({
           {/* Mobile Filter Toggle */}
           <div className="flex md:hidden items-center justify-between mb-4">
             <Suspense fallback={null}>
-              <FilterDrawer brands={brands} categories={categories} maxPrice={overallMaxPrice} />
+              <FilterDrawer brands={brands} categories={categories} sizes={allSizes} maxPrice={overallMaxPrice} />
             </Suspense>
           </div>
 
           <div className="border-l border-r border-zinc-200 md:border-none">
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 border-t border-b border-zinc-200">
+            <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 border-t border-b border-zinc-200">
               {products.map((product: ProductWithRelations) => {
                 const sizes = product.sizes as unknown as ProductSizes | null;
                 const availability = {
@@ -210,7 +239,7 @@ export default async function ShopPage({
                   <Link
                     href={`/product/${product.slug}`}
                     key={product.id}
-                    className="aspect-[3/4] bg-white flex flex-col group cursor-pointer border border-zinc-200 border-b-4 transition-colors duration-200 hover:border-[#8AD658]"
+                    className="aspect-[4/6] bg-white flex flex-col group cursor-pointer border border-zinc-200 border-b-4 transition-colors duration-200 hover:border-[#8AD658]"
                   >
                     <div className="relative w-full h-[60%] overflow-hidden bg-[#F6F6F6] border-b border-zinc-100 flex-shrink-0">
                       <div className="absolute inset-0 bg-zinc-200 animate-pulse" />

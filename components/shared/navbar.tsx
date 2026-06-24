@@ -1,9 +1,10 @@
 // components/shared/navbar.tsx
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation"; // 👈 Buat ngecek kita lagi di halaman mana
+import { usePathname } from "next/navigation";
 import { ShoppingBag, Search, User, Menu } from "lucide-react";
 import {
   Sheet,
@@ -15,9 +16,20 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { useCartStore } from "@/lib/stores/cart-store";
 
 export default function Navbar() {
-  const pathname = usePathname(); // Dapetin URL sekarang (misal: /shop)
+  const pathname = usePathname();
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    useCartStore.persist.rehydrate();
+    setHydrated(true);
+  }, []);
+
+  const totalItems = useCartStore((s) =>
+    s.items.reduce((sum, i) => sum + i.quantity, 0),
+  );
 
   // Array menu biar kodingan lebih bersih & gampang diatur
   const navLinks = [
@@ -133,11 +145,11 @@ export default function Navbar() {
           <Link href="/cart">
             <Button variant="ghost" size="icon" className="relative hover:bg-transparent hover:text-primary transition-colors">
               <ShoppingBag className="h-5 w-5" />
-              <Badge 
-                className="absolute -right-0 -top-0 h-4 w-4 items-center justify-center rounded-full bg-primary p-0 text-[10px] text-white"
-              >
-                0
-              </Badge>
+              {hydrated && totalItems > 0 && (
+                <Badge className="absolute -right-0 -top-0 h-4 w-4 items-center justify-center rounded-full bg-primary p-0 text-[10px] text-white">
+                  {totalItems > 99 ? "99+" : totalItems}
+                </Badge>
+              )}
             </Button>
           </Link>
         </div>

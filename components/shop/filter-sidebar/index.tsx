@@ -7,16 +7,11 @@ import PriceRangeSlider from "@/components/shop/price-range-slider";
 interface FilterSidebarProps {
   brands: Brand[];
   categories: Category[];
+  sizes: string[];
   maxPrice: number;
 }
 
-const CheckIcon = () => (
-  <svg viewBox="0 0 14 14" className="w-full h-full text-white" fill="none">
-    <path d="M3 7l3 3 5-5" stroke="currentColor" strokeWidth="2" />
-  </svg>
-);
-
-export default function FilterSidebar({ brands, categories, maxPrice }: FilterSidebarProps) {
+export default function FilterSidebar({ brands, categories, sizes, maxPrice }: FilterSidebarProps) {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -51,109 +46,96 @@ export default function FilterSidebar({ brands, categories, maxPrice }: FilterSi
 
   const activeBrands = searchParams.getAll("brand");
   const activeCategories = searchParams.getAll("category");
+  const activeSizes = searchParams.getAll("size");
   const activeCondition = searchParams.getAll("condition");
   const inStock = searchParams.get("inStock") === "true";
 
-  const sectionLabel = "text-[10px] font-bold uppercase tracking-widest text-black mb-3";
+  const sectionLabel = "text-[10px] font-bold uppercase tracking-widest text-black mb-2";
 
-  const checkboxBox = (checked: boolean) =>
-    `flex-shrink-0 w-3.5 h-3.5 border transition-colors ${checked ? "bg-black border-black" : "border-zinc-300 group-hover:border-zinc-500"}`;
+  const pillClass = (active: boolean) =>
+    `text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 border transition-colors ${
+      active
+        ? "bg-black text-white border-black"
+        : "text-zinc-400 border-zinc-200 hover:border-zinc-400 hover:text-zinc-600"
+    }`;
 
-  const checkboxLabel = (checked: boolean) =>
-    `text-xs font-bold uppercase tracking-wider ${checked ? "text-black" : "text-zinc-400 group-hover:text-zinc-600"} transition-colors`;
+  const PillSection = ({
+    title,
+    items,
+  }: {
+    title: string;
+    items: { key: string; label: string; active: boolean; onClick: () => void }[];
+  }) => (
+    <div className="pb-5 border-b border-zinc-100">
+      <h3 className={sectionLabel}>{title}</h3>
+      <div className="flex flex-wrap gap-1.5">
+        {items.map((item) => (
+          <button key={item.key} onClick={item.onClick} className={pillClass(item.active)}>
+            {item.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
 
   return (
-    <div className="space-y-6 select-none">
+    <div className="space-y-5 select-none">
       <h2 className="text-sm font-black uppercase tracking-widest text-black pb-3 border-b border-zinc-200">
         Filter
       </h2>
 
-      {/* BRAND */}
-      <div className="pb-6 border-b border-zinc-100">
-        <h3 className={sectionLabel}>Brand</h3>
-        <div className="flex flex-col">
-          {brands.map((brand) => {
-            const checked = activeBrands.includes(brand.slug);
-            return (
-              <button
-                key={brand.id}
-                onClick={() => pushParams("brand", brand.slug, true)}
-                className="flex items-center gap-2.5 group py-1 w-full text-left"
-              >
-                <span className={checkboxBox(checked)}>
-                  {checked && <CheckIcon />}
-                </span>
-                <span className={checkboxLabel(checked)}>{brand.name}</span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
+      <PillSection
+        title="Brand"
+        items={brands.map((b) => ({
+          key: b.id,
+          label: b.name,
+          active: activeBrands.includes(b.slug),
+          onClick: () => pushParams("brand", b.slug, true),
+        }))}
+      />
 
-      {/* CATEGORY */}
-      <div className="pb-6 border-b border-zinc-100">
-        <h3 className={sectionLabel}>Category</h3>
-        <div className="flex flex-col">
-          {categories.map((cat) => {
-            const checked = activeCategories.includes(cat.slug);
-            return (
-              <button
-                key={cat.id}
-                onClick={() => pushParams("category", cat.slug, true)}
-                className="flex items-center gap-2.5 group py-1 w-full text-left"
-              >
-                <span className={checkboxBox(checked)}>
-                  {checked && <CheckIcon />}
-                </span>
-                <span className={checkboxLabel(checked)}>{cat.name}</span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
+      <PillSection
+        title="Category"
+        items={categories.map((c) => ({
+          key: c.id,
+          label: c.name,
+          active: activeCategories.includes(c.slug),
+          onClick: () => pushParams("category", c.slug, true),
+        }))}
+      />
 
-      {/* CONDITION */}
-      <div className="pb-6 border-b border-zinc-100">
-        <h3 className={sectionLabel}>Condition</h3>
-        <div className="flex flex-col">
-          {["new", "used"].map((cond) => {
-            const checked = activeCondition.includes(cond);
-            return (
-              <button
-                key={cond}
-                onClick={() => pushParams("condition", cond, true)}
-                className="flex items-center gap-2.5 group py-1 w-full text-left"
-              >
-                <span className={checkboxBox(checked)}>
-                  {checked && <CheckIcon />}
-                </span>
-                <span className={checkboxLabel(checked)}>
-                  {cond.charAt(0).toUpperCase() + cond.slice(1)}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
+      <PillSection
+        title="Size (US)"
+        items={sizes.map((s) => ({
+          key: s,
+          label: s,
+          active: activeSizes.includes(s),
+          onClick: () => pushParams("size", s, true),
+        }))}
+      />
 
-      {/* STOCK */}
-      <div className="pb-6 border-b border-zinc-100">
-        <h3 className={sectionLabel}>Availability</h3>
-        <div className="flex flex-col">
-          <button
-            key="inStock"
-            onClick={() => pushParams("inStock", "true")}
-            className="flex items-center gap-2.5 group py-1 w-full text-left"
-          >
-            <span className={checkboxBox(inStock)}>
-              {inStock && <CheckIcon />}
-            </span>
-            <span className={checkboxLabel(inStock)}>In Stock Only</span>
-          </button>
-        </div>
-      </div>
+      <PillSection
+        title="Condition"
+        items={["new", "used"].map((cond) => ({
+          key: cond,
+          label: cond.charAt(0).toUpperCase() + cond.slice(1),
+          active: activeCondition.includes(cond),
+          onClick: () => pushParams("condition", cond, true),
+        }))}
+      />
 
-      {/* PRICE RANGE */}
+      <PillSection
+        title="Availability"
+        items={[
+          {
+            key: "inStock",
+            label: "In Stock Only",
+            active: inStock,
+            onClick: () => pushParams("inStock", "true"),
+          },
+        ]}
+      />
+
       <div>
         <h3 className={sectionLabel}>Price Range</h3>
         <PriceRangeSlider maxPrice={maxPrice} />
