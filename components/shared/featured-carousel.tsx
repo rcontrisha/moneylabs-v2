@@ -37,21 +37,21 @@ export default function FeaturedCarousel({ title, exploreLink, products }: Featu
 
   return (
     <div className="w-full"> {/* Container utama dikasih padding */}
-      <div className="mb-8 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+      <div className="lg:mb-8 mb-6 flex items-center justify-between gap-4 md:gap-6 md:items-end">
         
         {/* Bagian Kiri: Judul & Garis */}
         <div>
-          <h2 className="text-4xl font-black uppercase italic tracking-tighter leading-none">
+          <h2 className="text-2xl md:text-4xl font-black uppercase italic tracking-tighter leading-none">
             {title}
           </h2>
-          <div className="mt-4 h-1.5 w-20 bg-black rounded-none" />
+          <div className="mt-1.5 md:mt-4 h-1 md:h-1.5 w-12 md:w-20 bg-black rounded-none" />
         </div>
 
         {/* Bagian Kanan: Navigasi & Explore Link */}
-        <div className="flex items-center gap-6 self-end">
+        <div className="flex items-center gap-8 md:gap-10 self-end">
           
           {/* Custom Navigation Buttons (Gaya Kotak/Tegas) */}
-          <div className="hidden md:flex items-center gap-2">
+          <div className="hidden sm:flex items-center gap-2">
             <Button
               variant="outline"
               size="icon"
@@ -73,11 +73,11 @@ export default function FeaturedCarousel({ title, exploreLink, products }: Featu
           </div>
 
           {/* Separator kecil (opsional) */}
-          <div className="hidden md:block h-6 w-px bg-zinc-300" />
+          <div className="hidden sm:block h-6 w-px bg-zinc-300" />
 
           {/* Explore All Link */}
-          <Button variant="link" asChild className="p-0 text-black font-bold uppercase tracking-widest text-sm hover:no-underline group">
-            <Link href={exploreLink} className="flex items-center gap-1">
+          <Button variant="link" asChild className="px-0 has-[>svg]:px-0 text-black font-bold uppercase lg:tracking-widest tracking-tight text-xs hover:no-underline group">
+            <Link href={exploreLink} className="flex items-end lg:gap-1 gap-0">
               Explore All 
               <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>

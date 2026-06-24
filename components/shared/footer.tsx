@@ -9,19 +9,19 @@ import { Facebook, Instagram, Twitter } from "lucide-react";
 export default function Footer() {
   return (
     <footer className="bg-background border-t">
-      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 lg:py-12 py-6 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
           
           {/* Brand & Social */}
           <div className="space-y-4">
             {/* Logo Wrapper */}
-            <Link href="/" className="flex items-center gap-2 inline-block">
+            <Link href="/" className="inline-flex items-center gap-2">
               <Image 
                 src="/assets/logo.png" 
                 alt="MoneyLabs Logo" 
                 width={48} 
                 height={48} 
-                className="h-10 w-auto object-contain" // Agak gedean dikit dari navbar
+                className="h-10 w-auto object-contain" 
               />
               <span className="text-xl font-bold uppercase tracking-wider">
                 MONEY<span className="text-primary">LABS</span>.
@@ -70,8 +70,8 @@ export default function Footer() {
             <p className="text-sm text-muted-foreground mb-4">
               Subscribe to get special offers, free giveaways, and once-in-a-lifetime deals.
             </p>
-            <div className="flex w-full max-w-sm items-center space-x-2">
-              <Input type="email" placeholder="Email address" />
+            <div className="flex flex-wrap sm:flex-nowrap w-full max-w-sm items-center gap-2">
+              <Input type="email" placeholder="Email address" className="min-w-0 flex-1" />
               <Button type="submit">Subscribe</Button>
             </div>
           </div>

@@ -66,6 +66,7 @@ export default function ProductCard({ data }: ProductCardProps) {
           src={data.image || "/assets/placeholder.svg"}
           alt={data.name}
           fill
+          className="object-cover"
           sizes="(max-width: 768px) 50vw, 20vw"
         />
 
@@ -77,9 +78,9 @@ export default function ProductCard({ data }: ProductCardProps) {
         )}
 
         {/* 🚀 2. RE-DESIGNED CONDITION BADGES: Sharp & Solid  */}
-        <div className="absolute right-0 top-0 flex z-10">
+        <div className="absolute right-0 top-0 flex gap-0.5 z-10">
           {availability.hasNew && (
-            <div className="bg-white px-1 border-t border-r border-zinc-100">
+            <div className="bg-white px-1 border-l border-b border-zinc-100">
               <span className="text-[8px] font-black uppercase text-zinc-900 tracking-tighter">New</span>
             </div>
           )}
@@ -98,7 +99,7 @@ export default function ProductCard({ data }: ProductCardProps) {
         </span>
 
         <Link href={`/product/${data.slug}`} className="mt-0.5">
-          <h3 className="line-clamp-1 text-[11px] font-bold uppercase tracking-tight text-zinc-900 group-hover:text-zinc-500 transition-colors">
+          <h3 className="line-clamp-2 text-[11px] font-bold uppercase tracking-tight text-zinc-900 group-hover:text-zinc-500 transition-colors">
             {data.name}
           </h3>
         </Link>

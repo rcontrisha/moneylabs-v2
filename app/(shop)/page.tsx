@@ -13,7 +13,7 @@ export default async function HomePage() {
   const { slides, brands, visualCategories, featuredProducts, usedSteals, newArrivals } = await getLandingData();
 
   return (
-    <div className="flex flex-col pb-16 bg-white">
+    <div className="flex flex-col lg:pb-16 pb-0 bg-white">
       {/* 1. Main Hero Area */}
       <HeroSlider data={slides} />
       
@@ -21,7 +21,7 @@ export default async function HomePage() {
       <BrandWall brands={brands} />
 
       {/* 3. SECTION: NEW ARRIVALS (White BG) */}
-      <section className="mx-auto w-full max-w-[1600px] px-4 sm:px-6 lg:px-10 py-16">
+      <section className="mx-auto w-full max-w-[1600px] px-4 sm:px-6 lg:px-10 lg:py-16 py-8">
         <FeaturedCarousel 
           title="New Arrivals" 
           exploreLink="/shop?sort=newest"
@@ -32,7 +32,7 @@ export default async function HomePage() {
       <VisualCategories categories={visualCategories} />
 
       {/* 4. SECTION: FEATURED DROPS (White BG) */}
-      <section className="mx-auto w-full max-w-[1600px] px-4 sm:px-6 lg:px-10 py-16">
+      <section className="mx-auto w-full max-w-[1600px] px-4 sm:px-6 lg:px-10 lg:py-16 py-8">
         <FeaturedCarousel 
           title="Featured Drops" 
           exploreLink="/shop?featured=true"
@@ -42,8 +42,8 @@ export default async function HomePage() {
 
       {/* 🚀 5. SECTION: USED STEALS (Zinc Alternate Section) */}
       {/* Kita kasih warna background beda dikit biar section Used ini "pop-out" */}
-      <section className="w-full bg-zinc-50/50 border-y border-zinc-100">
-        <div className="mx-auto max-w-[1600px] px-4 sm:px-6 lg:px-10">
+      <section className="w-full bg-zinc-50/50 border-y border-zinc-100 lg:py-16 py-8">
+        <div className="mx-auto w-full max-w-[1600px] px-4 sm:px-6 lg:px-10">
           <FeaturedCarousel 
             title="Used Steals" 
             exploreLink="/shop?condition=used"
@@ -53,7 +53,7 @@ export default async function HomePage() {
       </section>
 
       {/* 6. Footer Banner */}
-      <div className="w-full max-w-[1600px] py-16">
+      <div className="mx-auto w-full max-w-[1600px] lg:py-16 py-0">
         <PromoBanner />
       </div>
 

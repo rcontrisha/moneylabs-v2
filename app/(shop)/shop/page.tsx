@@ -255,7 +255,7 @@ export default async function ShopPage({
                           Sale
                         </div>
                       )}
-                      <div className="absolute right-0 top-0 flex z-10">
+                      <div className="absolute right-0 top-0 flex gap-0.5 z-10">
                         {availability.hasNew && (
                           <div className="bg-white px-1 border-l border-b border-zinc-100">
                             <span className="text-[8px] font-black uppercase text-zinc-900 tracking-tighter">New</span>

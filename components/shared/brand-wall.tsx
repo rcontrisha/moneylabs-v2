@@ -18,9 +18,9 @@ export default function BrandWall({ brands }: BrandWallProps) {
   if (brands.length === 0) return null;
 
   return (
-    <section className="w-full border-b bg-white py-12">
-      <div className="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
-        <p className="mb-10 text-s font-bold uppercase tracking-[0.2em] text-muted-foreground/60">
+    <section className="w-full border-b bg-white lg:pt-12 lg:pb-20 py-8">
+      <div className="mx-auto w-full max-w-[1600px] px-4 text-center sm:px-6 lg:px-8">
+        <p className="lg:mb-10 mb-4 text-s font-bold uppercase tracking-[0.2em] text-muted-foreground/60">
           Official Retailer Of
         </p>
         
@@ -38,10 +38,9 @@ export default function BrandWall({ brands }: BrandWallProps) {
         >
           <CarouselContent className="-ml-4 flex items-center">
             {brands.map((brand) => (
-                console.log(brand),
               <CarouselItem 
                 key={brand.id} 
-                className="basis-1/3 pl-4 sm:basis-1/3 md:basis-1/4 lg:basis-1/6"
+                className="basis-1/4 pl-4 md:basis-1/4 lg:basis-1/6"
               >
                 <Link 
                   href={`/brands/${brand.slug}`}
@@ -52,7 +51,7 @@ export default function BrandWall({ brands }: BrandWallProps) {
                       src={brand.image || "/assets/placeholder.svg"} 
                       alt={brand.name}
                       fill
-                      sizes="7rem"
+                      sizes="(max-width: 640px) 33vw, (max-width: 1024px) 25vw, 16vw"
                       className="object-contain"
                     />
                   </div>

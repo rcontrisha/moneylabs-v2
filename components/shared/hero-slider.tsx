@@ -70,7 +70,7 @@ export default function HeroSlider({ data, compact = false }: HeroSliderProps) {
             /* compact uses smaller heights for admin preview */
             <CarouselItem
               key={slide.id}
-              className={compact ? "relative w-full h-[220px] md:h-[320px] lg:h-[360px]" : "relative w-full h-[550px] md:h-[650px] lg:h-[75vh] min-h-[600px] lg:max-h-[750px]"}
+              className={compact ? "relative w-full h-[220px] md:h-[320px] lg:h-[360px]" : "relative w-full h-[550px] md:h-[650px] lg:h-[75vh] lg:min-h-[600px] lg:max-h-[750px]"}
             >
               {/* Background Image */}
               <div className="absolute inset-0 bg-zinc-800 animate-pulse">
@@ -78,6 +78,8 @@ export default function HeroSlider({ data, compact = false }: HeroSliderProps) {
                   src={slide.image}
                   alt={slide.title}
                   fill
+                  className="object-cover"
+                  sizes="100vw"
                   priority={idx === 0}
                   fetchPriority={idx === 0 ? "high" : undefined}
                 />
@@ -100,7 +102,7 @@ export default function HeroSlider({ data, compact = false }: HeroSliderProps) {
                     )}
 
                     {/* Massive Typography */}
-                    <h1 className="text-5xl md:text-7xl lg:text-[8rem] font-black uppercase italic tracking-tighter text-white leading-[0.85] drop-shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-150">
+                    <h1 className="text-[clamp(2rem,8vw,5rem)] md:text-[clamp(3.5rem,8vw,7rem)] lg:text-[clamp(5rem,10vw,8rem)] font-black uppercase italic tracking-tighter text-white leading-[0.85] drop-shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-150 max-w-full">
                       {slide.title.split(" ").slice(0, -1).join(" ")} <br />
                       <span className="text-transparent stroke-text">
                         {slide.title.split(" ").slice(-1)}

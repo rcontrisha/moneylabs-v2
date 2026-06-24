@@ -18,12 +18,12 @@ export default function VisualCategories({ categories }: VisualCategoriesProps) 
   if (categories.length === 0) return null;
 
   return (
-    <section className="mx-auto w-full max-w-[1600px] px-4 sm:px-6 lg:px-10">
-      <div className="mb-12 flex flex-col items-start text-left">
-        <h2 className="text-4xl font-black uppercase italic tracking-tighter leading-none">
+    <section className="mx-auto w-full max-w-[1600px] px-4 sm:px-6 lg:px-10 lg:py-16 py-8">
+      <div className="lg:mb-12 mb-6 flex flex-col items-start text-left">
+        <h2 className="text-2xl md:text-4xl font-black uppercase italic tracking-tighter leading-none">
           Shop by <span className="text-zinc-400">Category</span>
         </h2>
-        <div className="mt-4 h-1.5 w-20 bg-black rounded-none" />
+        <div className="mt-1.5 md:mt-4 h-1 md:h-1.5 w-12 md:w-20 bg-black rounded-none" />
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -46,7 +46,7 @@ export default function VisualCategories({ categories }: VisualCategoriesProps) 
 
             <div className="absolute inset-0 flex flex-col justify-end p-8 lg:p-10">
               <div className="h-1 w-0 bg-black group-hover:w-16 transition-all duration-500 rounded-none mb-4" />
-              <h3 className="text-3xl font-black uppercase italic tracking-tighter text-black leading-[0.8] opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <h3 className="text-2xl sm:text-3xl font-black uppercase italic tracking-tighter text-black leading-[0.8] opacity-0 group-hover:opacity-100 transition-opacity duration-300 line-clamp-2">
                 Go to <br/> {item.customName || item.category.name}
               </h3>
             </div>
