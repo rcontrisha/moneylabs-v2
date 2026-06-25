@@ -242,7 +242,7 @@ export default async function ShopPage({
                     className="aspect-[4/6] bg-white flex flex-col group cursor-pointer border border-zinc-200 border-b-4 transition-colors duration-200 hover:border-[#8AD658]"
                   >
                     <div className="relative w-full h-[60%] overflow-hidden bg-[#F6F6F6] border-b border-zinc-100 flex-shrink-0">
-                      <div className="absolute inset-0 bg-zinc-200 animate-pulse" />
+                      <div className="absolute inset-0 bg-zinc-200  " />
                       <Image
                         src={product.image || "/assets/placeholder.svg"}
                         alt={product.name}

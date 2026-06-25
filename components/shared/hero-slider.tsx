@@ -59,7 +59,7 @@ export default function HeroSlider({ data, compact = false }: HeroSliderProps) {
   }, [api]);
 
   return (
-    <section className="w-full bg-zinc-950 relative">
+    <section className="w-full relative">
       <Carousel
         setApi={setApi}
         plugins={[plugin.current]}
@@ -70,10 +70,10 @@ export default function HeroSlider({ data, compact = false }: HeroSliderProps) {
             /* compact uses smaller heights for admin preview */
             <CarouselItem
               key={slide.id}
-              className={compact ? "relative w-full h-[220px] md:h-[320px] lg:h-[360px]" : "relative w-full h-[550px] md:h-[650px] lg:h-[75vh] lg:min-h-[600px] lg:max-h-[750px]"}
+              className={compact ? "relative w-full h-[175px] md:h-[320px] lg:h-[360px]" : "relative w-full h-[175px] md:h-[650px] lg:h-[75vh] lg:min-h-[600px] lg:max-h-[750px] bg-zinc-950"}
             >
               {/* Background Image */}
-              <div className="absolute inset-0 bg-zinc-800 animate-pulse">
+              <div className="absolute inset-0 bg-zinc-800">
                 <Image
                   src={slide.image}
                   alt={slide.title ?? ""}
@@ -123,7 +123,7 @@ export default function HeroSlider({ data, compact = false }: HeroSliderProps) {
         </CarouselContent>
 
   {/* 🚀 DOTS INDICATOR: Ditaruh di dalem gambar (paling bawah) */}
-  <div className={compact ? "absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-3 z-30" : "absolute bottom-10 left-1/2 -translate-x-1/2 flex gap-3 z-30"}>
+  <div className={compact ? "absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-3 z-30" : "max-sm:static max-sm:justify-center max-sm:py-2 max-sm:translate-x-0 absolute bottom-10 left-1/2 -translate-x-1/2 flex gap-3 z-30"}>
           {Array.from({ length: count }).map((_, index) => (
             <button
               key={index}
@@ -131,8 +131,8 @@ export default function HeroSlider({ data, compact = false }: HeroSliderProps) {
               className={cn(
                 "h-2 transition-all duration-300 rounded-full",
                 current === index 
-                  ? "w-10 bg-primary shadow-[0_0_10px_rgba(var(--primary),0.8)]" 
-                  : "w-2 bg-white/40 hover:bg-white/60"
+                  ? "w-10 max-sm:bg-black max-sm:shadow-none bg-primary shadow-[0_0_10px_rgba(var(--primary),0.8)]" 
+                  : "w-2 max-sm:bg-zinc-300 max-sm:hover:bg-zinc-400 bg-white/40 hover:bg-white/60"
               )}
               aria-label={`Go to slide ${index + 1}`}
             />

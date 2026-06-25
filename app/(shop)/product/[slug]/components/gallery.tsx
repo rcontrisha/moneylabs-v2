@@ -48,7 +48,7 @@ export function ProductGallery({ images }: { images: string[] }) {
             key={idx}
             onClick={() => goToImage(idx)} // Pake goToImage biar timer reset
               className={cn(
-                "relative aspect-square w-full overflow-hidden border transition-all duration-300 rounded-none bg-zinc-100 animate-pulse",
+                "relative aspect-square w-full overflow-hidden border transition-all duration-300 rounded-none bg-zinc-100  ",
               activeIdx === idx 
                 ? "border-black ring-1 ring-black p-0.5" 
                 : "border-zinc-100 opacity-60 hover:border-zinc-300 hover:opacity-100"
@@ -61,7 +61,7 @@ export function ProductGallery({ images }: { images: string[] }) {
 
       {/* 2. Main Preview (Sekarang Berubah Jadi Carousel) */}
       <div className="relative aspect-[3/2] flex-1 bg-[#F6F6F6] border border-zinc-100 overflow-hidden group rounded-none">
-        <div className="absolute inset-0 bg-zinc-200 animate-pulse" />
+        <div className="absolute inset-0 bg-zinc-200  " />
         
         {/* SLIDING TRACK */}
         <div className="absolute inset-0 overflow-hidden">

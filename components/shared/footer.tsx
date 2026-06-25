@@ -17,14 +17,14 @@ export default function Footer() {
             {/* Logo Wrapper */}
             <Link href="/" className="inline-flex items-center gap-2">
               <Image 
-                src="/assets/logo.png" 
+                src="/assets/moneylab.png" 
                 alt="MoneyLabs Logo" 
-                width={48} 
-                height={48} 
+                width={70} 
+                height={70} 
                 className="h-10 w-auto object-contain" 
               />
               <span className="text-xl font-bold uppercase tracking-wider">
-                MONEY<span className="text-primary">LABS</span>.
+                MONEY<span className="text-primary">LABS</span>
               </span>
             </Link>
             

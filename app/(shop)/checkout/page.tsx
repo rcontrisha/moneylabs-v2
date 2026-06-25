@@ -51,7 +51,7 @@ export default function CheckoutPage() {
   if (!hydrated) {
     return (
       <div className="max-w-7xl mx-auto px-4 pt-6 pb-24 md:px-6 lg:px-8">
-        <div className="animate-pulse space-y-4">
+        <div className="  space-y-4">
           <div className="h-6 w-48 bg-zinc-100" />
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-8">
             <div className="h-96 bg-zinc-50" />
